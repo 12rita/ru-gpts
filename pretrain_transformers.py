@@ -25,6 +25,7 @@ import shutil
 from typing import Dict, List, Tuple
 
 import numpy as np
+import matplotlib.pyplot as plt
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
@@ -386,6 +387,13 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
     return global_step, tr_loss / global_step
 
+def subplot_axes(fig, pos, data, title=""):
+    ax = fig.add_subplot(*pos)
+    ax.plot(data)
+    ax.set_title(title)
+    ax.grid()
+    return ax  # с графиком можно будет работать (например, для 3 графика нарисуем сетку)
+                
 
 def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefix="") -> Dict:
     # Loop to handle MNLI double evaluation (matched, mis-matched)
@@ -435,8 +443,13 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
 
     eval_loss = eval_loss / nb_eval_steps
     perplexity = torch.exp(torch.tensor(eval_loss))
+    args.perplexityPlot.push(perplexity)
 
     result = {"perplexity": perplexity}
+  
+
+
+
 
     output_eval_file = os.path.join(eval_output_dir, prefix, "eval_results.txt")
     with open(output_eval_file, "w") as writer:
@@ -594,6 +607,11 @@ def main():
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
     args = parser.parse_args()
 
+    
+    perplexityPlot = []
+    lossPlot = []
+    args.perplexityPlot = perplexityPlot
+
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
             "BERT and RoBERTa-like models do not have LM heads but masked LM heads. They must be run using the --mlm "
@@ -730,6 +748,7 @@ def main():
 
         global_step, tr_loss = train(args, train_dataset, model, tokenizer)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
+        lossPlot.push(tr_loss)
 
     # Saving best-practices: if you use save_pretrained for the model and tokenizer,
     # you can reload them using from_pretrained()
@@ -774,6 +793,11 @@ def main():
             result = evaluate(args, model, tokenizer, prefix=prefix)
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
+            
+    fig = plt.figure(figsize=(30, 10))
+    subplot_axes(fig, (2, 4, 1), perplexityPlot, "Perplexity")
+    subplot_axes(fig, (2, 4, 2), lossPlot, "Loss")
+    plt.show()        
 
     return results
 
