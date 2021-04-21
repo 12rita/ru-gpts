@@ -387,13 +387,6 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
     return global_step, tr_loss / global_step
 
-def subplot_axes(fig, pos, data, title=""):
-    ax = fig.add_subplot(*pos)
-    ax.plot(data)
-    ax.set_title(title)
-    ax.grid()
-    return ax  # с графиком можно будет работать (например, для 3 графика нарисуем сетку)
-                
 
 def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefix="") -> Dict:
     # Loop to handle MNLI double evaluation (matched, mis-matched)
@@ -793,13 +786,9 @@ def main():
             result = evaluate(args, model, tokenizer, prefix=prefix)
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
-            
-    fig = plt.figure(figsize=(30, 10))
-    subplot_axes(fig, (2, 4, 1), perplexityPlot, "Perplexity")
-    subplot_axes(fig, (2, 4, 2), lossPlot, "Loss")
-    plt.show()        
 
-    return results
+
+    return [lossPlot, perplexityPlot, results]
 
 
 if __name__ == "__main__":
