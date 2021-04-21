@@ -787,8 +787,12 @@ def main():
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
 
+    with open("loss.txt", "w") as file:
+        file.write(lossPlot)
 
-    return [lossPlot, perplexityPlot, results]
+    with open("perplexity.txt", "w") as file:
+        file.write(perplexityPlot)
+    return results
 
 
 if __name__ == "__main__":
