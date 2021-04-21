@@ -443,7 +443,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
 
     eval_loss = eval_loss / nb_eval_steps
     perplexity = torch.exp(torch.tensor(eval_loss))
-    args.perplexityPlot.push(perplexity)
+    args.perplexityPlot.append(perplexity)
 
     result = {"perplexity": perplexity}
   
@@ -748,7 +748,7 @@ def main():
 
         global_step, tr_loss = train(args, train_dataset, model, tokenizer)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
-        lossPlot.push(tr_loss)
+        lossPlot.append(tr_loss)
 
     # Saving best-practices: if you use save_pretrained for the model and tokenizer,
     # you can reload them using from_pretrained()
