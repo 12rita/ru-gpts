@@ -320,6 +320,8 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
             model.train()
             outputs = model(inputs, masked_lm_labels=labels) if args.mlm else model(inputs, labels=labels)
             loss = outputs[0]  # model outputs are always tuple in transformers (see doc)
+            if args.lossPlot:
+                args.lossPlot.append(loss.item())
 
             if args.n_gpu > 1:
                 loss = loss.mean()  # mean() to average on multi-gpu parallel training
@@ -431,12 +433,13 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
         with torch.no_grad():
             outputs = model(inputs, masked_lm_labels=labels) if args.mlm else model(inputs, labels=labels)
             lm_loss = outputs[0]
+            args.perplexityPlot.append(lm_loss.mean().item())
             eval_loss += lm_loss.mean().item()
         nb_eval_steps += 1
 
     eval_loss = eval_loss / nb_eval_steps
     perplexity = torch.exp(torch.tensor(eval_loss))
-    args.perplexityPlot.append(perplexity)
+
 
     result = {"perplexity": perplexity}
   
@@ -605,6 +608,7 @@ def main():
     perplexityPlot = []
     lossPlot = []
     args.perplexityPlot = perplexityPlot
+    args.lossPlot = lossPlot
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
