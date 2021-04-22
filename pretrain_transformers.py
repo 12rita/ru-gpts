@@ -588,6 +588,7 @@ def main():
         action="store_true",
         help="Whether to use 16-bit (mixed) precision (through NVIDIA apex) instead of 32-bit",
     )
+    parser.add_argument("--path")
     parser.add_argument(
         "--fp16_opt_level",
         type=str,
@@ -787,13 +788,14 @@ def main():
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
 
-    with open("loss.txt", "w") as file:
-        for element in lossPlot:
-            file.write('%s\n' % element)
+    if args.path:
+        with open(args.path+"loss.txt", "w") as file:
+            for element in lossPlot:
+                file.write('%s\n' % element)
 
-    with open("perplexity.txt", "w") as file:
-        for element in perplexityPlot:
-            file.write('%s\n' % element)
+        with open(args.path+"perplexity.txt", "w") as file:
+            for element in perplexityPlot:
+                file.write('%s\n' % element)
 
     return results
 
