@@ -788,10 +788,13 @@ def main():
             results.update(result)
 
     with open("loss.txt", "w") as file:
-        file.write("\n".join(lossPlot))
+        for element in lossPlot:
+            file.write(element + "\n")
 
     with open("perplexity.txt", "w") as file:
-        file.write("\n".join(perplexityPlot))
+        for element in perplexityPlot:
+            file.write(element + "\n")
+
     return results
 
 
