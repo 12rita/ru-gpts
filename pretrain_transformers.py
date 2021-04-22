@@ -789,11 +789,11 @@ def main():
 
     with open("loss.txt", "w") as file:
         for element in lossPlot:
-            file.write(element + "\n")
+            file.write('%s\n' % element)
 
     with open("perplexity.txt", "w") as file:
         for element in perplexityPlot:
-            file.write(element + "\n")
+            file.write('%s\n' % element)
 
     return results
 
