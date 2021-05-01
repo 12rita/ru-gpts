@@ -108,6 +108,7 @@ class LineByLineTextDataset(Dataset):
         return len(self.examples)
 
     def __getitem__(self, i):
+        print(self.examples[i])
         return torch.tensor(self.examples[i], dtype=torch.long)
 
 
