@@ -103,6 +103,10 @@ class LineByLineTextDataset(Dataset):
             lines = [line for line in f.read().splitlines() if (len(line) > 0 and not line.isspace())]
 
         self.examples = tokenizer.batch_encode_plus(lines, add_special_tokens=True, max_length=block_size)["input_ids"]
+        if args.path:
+            with open(args.path+"tokenized.txt", "w") as file:
+                for element in self.examples:
+                    file.write('%s\n' % element)
 
     def __len__(self):
         return len(self.examples)
