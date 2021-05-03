@@ -448,8 +448,6 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
 
 
     output_eval_file = os.path.join(eval_output_dir, prefix, "eval_results.txt")
-    print(prefix)
-    print(output_eval_file)
     with open(output_eval_file, "w") as writer:
         logger.info("***** Eval results {} *****".format(prefix))
         for key in sorted(result.keys()):
@@ -788,6 +786,7 @@ def main():
         for checkpoint in checkpoints:
             global_step = checkpoint.split("-")[-1] if len(checkpoints) > 1 else ""
             prefix = checkpoint.split("/")[-1] if checkpoint.find("checkpoint") != -1 else ""
+            print(prefix)
 
             model = AutoModelWithLMHead.from_pretrained(checkpoint)
             model.to(args.device)
